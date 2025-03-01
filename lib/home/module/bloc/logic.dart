@@ -10,7 +10,6 @@ import 'package:wanderly/home/module/repo/wanderly_repo.dart';
 class WanderlyLogic extends Bloc<WanderlyEvent, WanderlyState> {
   final WanderlyRepo _repo = WanderlyRepo.getInstance();
   StreamSubscription<Map<String, dynamic>>? _stream;
-  final bool _hasReceivedStreamData = false;
 
   WanderlyLogic() : super(WarperInitial()) {
     on<InitialLoadRequested>((event, emit) async {
@@ -19,19 +18,9 @@ class WanderlyLogic extends Bloc<WanderlyEvent, WanderlyState> {
       openStream();
       _repo.fetchInitData();
 
-      // Wait for a short period to see if stream provides data
-      await Future.delayed(Duration(seconds: 4));
-
-      // If no stream data has arrived yet, load cached data
-      if (!_hasReceivedStreamData) {
-        List<PublisherModel>? cachedData = await _repo.accessCachedData();
-        if (cachedData != null) {
-          emit(FetchCachedData(cachedData));
-        } else {
-          emit(FetchDataError(
-            'Failed to load data and no cached data available.',
-          ));
-        }
+      List<PublisherModel>? cachedData = await _repo.accessCachedData();
+      if (cachedData != null) {
+        emit(FetchCachedData(cachedData));
       }
     });
 
@@ -39,6 +28,7 @@ class WanderlyLogic extends Bloc<WanderlyEvent, WanderlyState> {
       (event, emit) {
         if (event.data['data'] != null &&
             (event.data['data'] as List).isNotEmpty) {
+          //  print(' 👍👍👍👍👍💬💬 ${event.data['data']}');
           List<PublisherModel> modelDataList = List<PublisherModel>.from(
             event.data['data'],
           );
@@ -59,12 +49,13 @@ class WanderlyLogic extends Bloc<WanderlyEvent, WanderlyState> {
     );
   }
 
-  //Raise a new Event
+  //listen a stream if data is come raise a event
   void openStream() {
     _stream ??= _repo.stream.listen(
       (
         Map<String, dynamic> data,
       ) {
+        print('🫢🫢🫢🫢 is every time ge get the data => $data');
         add(
           StartDataSubscription(data),
         );
@@ -76,5 +67,10 @@ class WanderlyLogic extends Bloc<WanderlyEvent, WanderlyState> {
   Future<void> close() {
     _stream?.cancel();
     return super.close();
+  }
+
+  void dispose() {
+    _stream?.cancel();
+    super.close();
   }
 }

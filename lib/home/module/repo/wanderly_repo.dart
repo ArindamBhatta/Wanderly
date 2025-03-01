@@ -16,8 +16,7 @@ class WanderlyRepo {
     return instance!;
   }
 
-  final StreamController<Map<String, dynamic>> _streamController =
-      StreamController.broadcast();
+  final _streamController = StreamController<Map<String, dynamic>>();
 
   Stream<Map<String, dynamic>> get stream => _streamController.stream;
 
@@ -40,7 +39,7 @@ class WanderlyRepo {
   }
 
   void openStream() {
-    _stream ??= _service.serviceStream.listen((data) async {
+    _stream ??= _service.serviceStream.listen((data) {
       try {
         if (data['data'] != null) {
           List<Map<String, dynamic>> rawDataList =
@@ -53,20 +52,24 @@ class WanderlyRepo {
               )
               .toList();
 
-          // Cache the latest successful API response🔴
-          setCachingTravelApi(CachedProperty.travelData, {'data': rawDataList});
+          setCachingTravelApi(
+            CachedProperty.travelData,
+            {
+              'data': rawDataList,
+            },
+          );
 
           // Send data through the stream
           _streamController.add({
             'data': dataCollection,
-            'error': true,
+            'error': false,
           });
         }
       } catch (error) {
         _streamController.add(
           {
             'data': null,
-            'error': false,
+            'error': true,
           },
         );
       }
