@@ -43,7 +43,9 @@ class WanderlyRepo {
       try {
         if (data['data'] != null) {
           List<Map<String, dynamic>> rawDataList =
-              List<Map<String, dynamic>>.from(data['data']);
+              List<Map<String, dynamic>>.from(
+            data['data'],
+          );
 
           // Convert Firestore data to List of models
           dataCollection = rawDataList

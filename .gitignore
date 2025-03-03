@@ -1,7 +1,5 @@
 # Ignore Android, iOS, Web, macOS, and Windows directories
-android/
-ios/
-web/
+
 macos/
 windows/
 

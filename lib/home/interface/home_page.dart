@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Text('Showing Caching Data'),
                   Text(
-                    '🎈🎈🎈🎈🎈🎈📍📍📍👍👍${state.cachedData}',
+                    '${state.cachedData}',
                   ),
                 ],
               ),
